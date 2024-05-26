@@ -11,11 +11,9 @@ const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [newTask, setNewTask] = useState({
-    title: "",
-    description: "",
-    completed: false,
-  });
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -34,19 +32,18 @@ const TaskList = () => {
 
   const handleAddTask = async () => {
     try {
-      if (
-        newTask.title.trim().length === 0 ||
-        newTask.description.trim().length === 0
-      ) {
+      if (title.trim().length === 0 || description.trim().length === 0) {
         setError("Title and description cannot be empty");
         return;
       }
       setLoading(true);
-      const response = await addTask(newTask);
+      const response = await addTask({ title, description, completed });
       if (response) {
         fetchTasks();
       }
-      setNewTask({ title: "", description: "", completed: false });
+      setTitle("");
+      setDescription("");
+      setCompleted(false);
       setLoading(false);
     } catch (error) {
       console.error("Error adding task:", error);
@@ -81,23 +78,21 @@ const TaskList = () => {
   };
 
   const handleTitleChange = (e) => {
-    const title = e.target.value;
     if (title.trim().length > 1) {
       setError("");
     } else {
       setError("Title must be at least 2 characters long");
     }
-    setNewTask({ ...newTask, title });
+    setTitle(e.target.value);
   };
 
   const handleDescriptionChange = (e) => {
-    const description = e.target.value;
     if (description.trim().length > 1) {
       setError("");
     } else {
       setError("Description must be at least 2 characters long");
     }
-    setNewTask({ ...newTask, description });
+    setDescription(e.target.value);
   };
 
   return (
@@ -106,14 +101,14 @@ const TaskList = () => {
       <input
         type="text"
         placeholder="Title"
-        value={newTask.title}
+        value={title}
         onChange={handleTitleChange}
         className="border border-gray-300 px-4 py-2 mb-4 mr-3 rounded-md focus:outline-none focus:border-blue-500"
       />
       <input
         type="text"
         placeholder="Description"
-        value={newTask.description}
+        value={description}
         onChange={handleDescriptionChange}
         className="border border-gray-300 px-4 py-2 mb-4 mr-3 rounded-md focus:outline-none focus:border-blue-500"
       />
